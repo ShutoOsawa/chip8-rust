@@ -4,22 +4,20 @@ use std::io::{BufReader, Read};
 use std::path::Path;
 
 fn main(){
-    
     let mut chip8 = Chip8::new();
-    chip8.load();
+    chip8.load_rom();
     chip8.run();
 }
 
-impl Chip8 {
-    pub fn new() -> Self{
+impl Chip8{
+    fn new() -> Self{
         Self {
             pc: 0x200,
             ram: [0; 4096]
         }
-        
     }
     
-    fn load(&mut self){
+    fn load_rom(&mut self){
         //get arguments
         let args: Vec<String> = env::args().collect();
         //get the first argument
@@ -43,7 +41,13 @@ impl Chip8 {
     }
     
     fn run(&mut self) {
-        println!("{:X}", self.ram[self.pc as usize] as u16)
+        let higher_byte = self.ram[self.pc as usize] as u16;
+        let lower_byte = self.ram[(self.pc+1) as usize] as u16;
+        let op = (higher_byte << 8) | lower_byte;
+        self.pc += 2;
+        println!("{:X}", higher_byte);
+        println!("{:X}", lower_byte);
+        println!("{:X}", op);
     }
 }
 
