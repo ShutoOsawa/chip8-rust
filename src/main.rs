@@ -6,7 +6,9 @@ use std::path::Path;
 fn main(){
     let mut chip8 = Chip8::new();
     chip8.load_rom();
-    chip8.run();
+    loop {
+        chip8.run();
+    }
 }
 
 impl Chip8{
@@ -41,14 +43,27 @@ impl Chip8{
     }
     
     fn run(&mut self) {
+        //fetch
         let higher_byte = self.ram[self.pc as usize] as u16;
         let lower_byte = self.ram[(self.pc+1) as usize] as u16;
         let op = (higher_byte << 8) | lower_byte;
         self.pc += 2;
-        println!("{:X}", higher_byte);
-        println!("{:X}", lower_byte);
-        println!("{:X}", op);
+        
+        //execute
+        match op {
+            0xA21E => Self::exec_ANNN(op),
+            _ => Self::exec_invalid(op),
+        }
     }
+    
+    fn exec_ANNN(op:u16){
+        println!("ANNN op code received: {}",op);
+    }
+    
+    fn exec_invalid(op:u16){
+        println!("Invalid op code: {}", op);
+    }
+    
 }
 
 //prepare chip8 structure
