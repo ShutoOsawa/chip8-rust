@@ -48,20 +48,25 @@ impl Chip8{
         let lower_byte = self.ram[(self.pc+1) as usize] as u16;
         let op = (higher_byte << 8) | lower_byte;
         self.pc += 2;
+
+        let digit1 = (op & 0xF000) >> 12;
+        let digit2 = (op & 0x0F00) >> 8;
+        let digit3 = (op & 0x00F0) >> 4;
+        let digit4 = op & 0x000F;
         
         //execute
-        match op {
-            0xA21E => Self::exec_ANNN(op),
-            _ => Self::exec_invalid(op),
+        match (digit1,digit2,digit3,digit4) {
+            (0xA, _, _, _) => Self::exec_ANNN(op),
+            (_, _, _, _) => Self::exec_invalid(op),
         }
     }
     
     fn exec_ANNN(op:u16){
-        println!("ANNN op code received: {}",op);
+        println!("ANNN op code received: {:X}",op);
     }
     
     fn exec_invalid(op:u16){
-        println!("Invalid op code: {}", op);
+        println!("Invalid op code: {:X}", op);
     }
     
 }
