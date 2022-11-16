@@ -15,7 +15,8 @@ impl Chip8{
     fn new() -> Self{
         Self {
             pc: 0x200,
-            ram: [0; 4096]
+            ram: [0; 4096],
+            I: 0x0
         }
     }
     
@@ -48,25 +49,28 @@ impl Chip8{
         let lower_byte = self.ram[(self.pc+1) as usize] as u16;
         let op = (higher_byte << 8) | lower_byte;
         self.pc += 2;
-
-        let digit1 = (op & 0xF000) >> 12;
-        let digit2 = (op & 0x0F00) >> 8;
-        let digit3 = (op & 0x00F0) >> 4;
-        let digit4 = op & 0x000F;
+        
+        //get each digit
+        let digits:[u16;4] = [ 
+             (op & 0xF000) >> 12,
+             (op & 0x0F00) >> 8,
+             (op & 0x00F0) >> 4,
+             op & 0x000F];
         
         //execute
-        match (digit1,digit2,digit3,digit4) {
-            (0xA, _, _, _) => Self::exec_ANNN(op),
-            (_, _, _, _) => Self::exec_invalid(op),
+        match (digits[0],digits[1],digits[2],digits[3]) {
+            (0xA, _, _, _) => Self::exec_ANNN(digits),
+            (_, _, _, _) => Self::exec_invalid(digits),
         }
     }
     
-    fn exec_ANNN(op:u16){
-        println!("ANNN op code received: {:X}",op);
+    fn exec_ANNN(digits:[u16;4]){
+        println!("ANNN op code received: {:X?}",digits);
+            
     }
     
-    fn exec_invalid(op:u16){
-        println!("Invalid op code: {:X}", op);
+    fn exec_invalid(digits:[u16;4]){
+        println!("Invalid op code: {:X?}", digits);
     }
     
 }
@@ -74,6 +78,7 @@ impl Chip8{
 //prepare chip8 structure
 struct Chip8 {
     pc: u16,
-    ram: [u8; 4096]
+    ram: [u8; 4096],
+    I: u16
 }
 
