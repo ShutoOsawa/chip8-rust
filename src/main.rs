@@ -57,16 +57,20 @@ impl Chip8{
              (op & 0x00F0) >> 4,
              op & 0x000F];
         
+        println!("chip8 I: {:X}",self.I);
         //execute
         match (digits[0],digits[1],digits[2],digits[3]) {
-            (0xA, _, _, _) => Self::exec_ANNN(digits),
+            (0xA, _, _, _) => Self::exec_ANNN(self,digits),
             (_, _, _, _) => Self::exec_invalid(digits),
         }
     }
     
-    fn exec_ANNN(digits:[u16;4]){
+    
+    fn exec_ANNN(chip8:&mut Chip8,digits:[u16;4]){
         println!("ANNN op code received: {:X?}",digits);
-            
+        let num :u16 = digits[1]<<8 | digits[2]<<4 | digits[3];
+        println!("NNN: {:X}",num);
+        chip8.I = num;
     }
     
     fn exec_invalid(digits:[u16;4]){
