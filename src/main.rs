@@ -52,32 +52,22 @@ impl Chip8{
         self.pc += 2;
         
         //get each digit
-        let digits:[u16;4] = [ 
-             (op & 0xF000) >> 12,
-             (op & 0x0F00) >> 8,
-             (op & 0x00F0) >> 4,
-             op & 0x000F];
         
-        println!("chip8 I: {:X}",self.i_reg);
+        let digit1:u16 = (op & 0xF000) >> 12;
+        let digit2:u16 = (op & 0x0F00) >> 8;
+        let digit3:u16 = (op & 0x00F0) >> 4;
+        let digit4:u16 =  op & 0x000F;
+        
         //execute
-        match (digits[0],digits[1],digits[2],digits[3]) {
-            (0xA, _, _, _) => Self::exec_annn(digits),
-            (_, _, _, _) => Self::exec_invalid(digits),
+        match (digit1,digit2,digit3,digit4) {
+            (0xA, _, _, _) => { 
+               println!("ANNN op code received: {:X?}",op);
+               self.i_reg = op & 0xFFF;
+                println!("I: {:X}",self.i_reg);
+            },
+            (_, _, _, _) => println!("Invalid op code: {:X?}", op),
         }
     }
-    
-    
-    fn exec_annn(digits:[u16;4]){
-        println!("ANNN op code received: {:X?}",digits);
-        let num :u16 = digits[1]<<8 | digits[2]<<4 | digits[3];
-        println!("NNN: {:X}",num);
-        //chip8.I = num;
-    }
-    
-    fn exec_invalid(digits:[u16;4]){
-        println!("Invalid op code: {:X?}", digits);
-    }
-    
 }
 
 //prepare chip8 structure
